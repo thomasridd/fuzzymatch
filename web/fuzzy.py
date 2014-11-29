@@ -57,17 +57,3 @@ def find_best_match_using_sequence_matcher(item, from_list):
             best_item = from_item
 
     return best_item, best_match
-
-def main():
-    matched = match_files('left.csv', 'right.csv')
-    fuzzy_matched = 0
-    for match in matched:
-        if match['power'] != 1:
-            print "left %s, right %s, power %s, match %s" % \
-                  (match['left'], match['right'], match['power'], match['match_index'])
-            fuzzy_matched = fuzzy_matched + 1
-
-    print "%s printed of %s" % (fuzzy_matched, len(matched))
-
-if __name__ == "__main__":
-    main()
