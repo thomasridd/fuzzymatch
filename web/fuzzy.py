@@ -1,6 +1,9 @@
 __author__ = 'tom ridd'
 
 from difflib import SequenceMatcher
+import Levenshtein
+
+
 from csv import reader
 
 
@@ -31,8 +34,12 @@ def match_lists(left_list, right_list):
     result_list = []
     for item in left_list:
         matched_item, matched_strength = find_best_match(item, right_list)
-        result_list.append({'left': item, 'right': matched_item,
-                            'power': matched_strength, 'match_index': right_list.index(matched_item) + 1})
+        try:
+            result_list.append({'left': item, 'right': matched_item,
+                                'power': matched_strength, 'match_index': right_list.index(matched_item) + 1})
+        except:
+            result_list.append({'left': item, 'right': matched_item, 'power': matched_strength,
+                                'match_index': -1})
     return result_list
 
 def find_best_match(item, from_list):
@@ -42,7 +49,7 @@ def find_best_match(item, from_list):
         return item, 1.0
     else:
         # Simple sequence matching using difflib
-        return find_best_match_using_sequence_matcher(item, from_list)
+        return find_best_match_using_levenshtein(item, from_list)
 
 def find_best_match_using_sequence_matcher(item, from_list):
     # Simple sequence matching using difflib
@@ -51,9 +58,23 @@ def find_best_match_using_sequence_matcher(item, from_list):
 
     # Simple sequence matching using difflib
     for from_item in from_list:
-        m = SequenceMatcher(a = item, b = from_item)
+        m = SequenceMatcher(a = item.lower(), b = from_item.lower())
         if m.ratio() > best_match:
             best_match = m.ratio()
+            best_item = from_item
+
+    return best_item, best_match
+
+def find_best_match_using_levenshtein(item, from_list):
+    # Simple sequence matching using difflib
+    best_item = ''
+    best_match = 0
+
+    # Simple sequence matching using difflib
+    for from_item in from_list:
+        m = Levenshtein.ratio(item.lower(), from_item.lower())
+        if m > best_match:
+            best_match = m
             best_item = from_item
 
     return best_item, best_match
